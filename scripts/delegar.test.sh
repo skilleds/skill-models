@@ -53,6 +53,14 @@ printf -- '-----BEGIN RSA PRIVATE KEY-----\nabc\n' > "$T/s2.txt";               
 printf 'api_key = "abcdef0123456789abcd"\n' > "$T/s3.txt";                                     run -- gemini "$T/s3.txt"; esperar segredo-atribuicao 3 "SEGREDO"
 printf 'Authorization: Bearer abcdefghijklmnopqrstuvwx\n' > "$T/s4.txt";                       run -- cursor "$T/s4.txt"; esperar segredo-bearer 3 "SEGREDO"
 
+echo "== o externo nunca toca servidor (pisos 22/24) =="
+printf 'rode ssh root@vps-prd systemctl restart api e confirme\n' > "$T/ssh.txt"
+run -- codex "$T/ssh.txt" --sandbox workspace-write --cwd "$T/proj"; esperar brief-manda-ssh-recusado 3 "nunca toca servidor" "!codex exec"
+printf 'copie com rsync -a build/ prd:/srv\n' > "$T/rs.txt"
+run -- gemini "$T/rs.txt" --sandbox workspace-write; esperar brief-manda-rsync-recusado 3 "nunca toca servidor"
+run STUB_STDIN="$T/stdin.txt" -- codex "$T/prompt.txt" --sandbox workspace-write --cwd "$T/proj"; esperar preambulo-injetado 0
+if grep -q 'REGRAS INVIOLÁVEIS' "$T/stdin.txt" && grep -q 'Resuma o arquivo README' "$T/stdin.txt"; then echo "  ✔ preâmbulo + brief original chegam ao externo"; ok=$((ok+1)); else echo "  ✖ preâmbulo ausente no stdin"; fail=$((fail+1)); fi
+
 echo "== provedor ausente =="
 mkdir -p "$T/vazio-bin"; B_SAVE="$B"; B="$T/vazio-bin"
 run -- codex "$T/prompt.txt"; esperar codex-ausente 2 "não encontrado"

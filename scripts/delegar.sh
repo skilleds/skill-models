@@ -62,6 +62,12 @@ if grep -qE "$SEGREDO" "$pf"; then
   exit 3
 fi
 
+# ---- piso 22/24: o externo não toca servidor. Brief que MANDA ssh/scp/rsync/kubectl é recusado em workspace-write
+if [ "$sandbox" = "workspace-write" ] && grep -qE '(^|[^A-Za-z0-9_-])(ssh|scp|rsync|kubectl)[[:space:]]+[^[:space:]]' "$pf"; then
+  echo "delegar.sh: o brief manda usar ssh/scp/rsync/kubectl. Recusado: o externo nunca toca servidor/VPS (pisos 23/24); peça um diff e o orquestrador comita." >&2
+  exit 3
+fi
+
 # ---- placar: registra a delegação (vocabulário fechado; falha do placar NUNCA derruba a delegação)
 reg() { # resultado duração [nota]
   [ -n "$tipo" ] || return 0
@@ -105,8 +111,16 @@ for v in "${pv[@]}"; do
   if [ -n "${!v+x}" ]; then envargs+=("$v=${!v}"); fi
 done
 
+# ---- brief com o PREÂMBULO obrigatório (pisos 22/24): o externo devolve diff/texto, nunca age no servidor
+pfx="$out/brief.txt"
+{
+  printf '%s\n' "REGRAS INVIOLÁVEIS (do orquestrador): é PROIBIDO usar ssh, scp, rsync, kubectl, docker push/exec, acessar servidor/VPS/banco de hml ou prd, fazer deploy, enviar e-mail/pagamento/webhook real, ou rodar git commit/push. Sua entrega é DIFF e/ou texto para o orquestrador revisar e commitar; só ele publica (piso 22). Mudança em servidor = operação nomeada do ops (piso 24), que você não executa."
+  printf '\n'
+  cat "$pf"
+} > "$pfx"
+
 # ---- monta o comando (array, nunca string: eval é vetado)
-cmd=(); stdin_file="$pf"
+cmd=(); stdin_file="$pfx"
 case "$prov" in
   codex)
     cmd=("$bin" exec -s "$sandbox" -C "$cwd" --ephemeral --color never -o "$resp")
@@ -118,7 +132,7 @@ case "$prov" in
     cmd=("$bin" -p "Execute as instruções recebidas por stdin." --approval-mode "$mode" --output-format text)
     if [ -n "$model" ]; then cmd+=(-m "$model"); fi ;;
   cursor)
-    cmd=("$bin" -p "$(cat "$pf")" --output-format text --workspace "$cwd")
+    cmd=("$bin" -p "$(cat "$pfx")" --output-format text --workspace "$cwd")
     if [ "$sandbox" = "read-only" ]; then cmd+=(--mode ask); else cmd+=(--sandbox enabled --force); fi
     if [ -n "$model" ]; then cmd+=(--model "$model"); fi
     stdin_file=/dev/null ;;

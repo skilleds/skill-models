@@ -118,7 +118,7 @@ Mapa de references:
    modelo lê sai para outro fornecedor — avisar antes da primeira chamada e **perguntar** em repo
    de cliente ou dado sensível.
 7. **Efeito externo nunca sai de não-prd** — o externo não faz deploy, e-mail, pagamento nem rede
-   com efeito (`schematize-engineering` → `references/efeitos-externos.md`).
+   com efeito, nem toca servidor (`ssh`/`scp`/`rsync`/`kubectl` recusados; o `delegar.sh` injeta o preâmbulo; só o orquestrador comita — pisos 22/24) (`schematize-engineering` → `references/efeitos-externos.md`).
 8. **Placar é local e de vocabulário fechado; publicar é opt-in.** Nunca grava código, caminho,
    projeto, prompt nem texto livre. Publicar posta no nome da conta GitHub do usuário (conteúdo
    anônimo, autoria não): prévia exata e aviso sem rodeio antes do 1º envio; sem `gh`/auth/opt-in, nada
@@ -142,3 +142,5 @@ Mapa de references:
   geração do asset é desta skill.
 - **`claude-api`** (skill do Claude Code) — API da Anthropic; esta skill é sobre **CLIs de
   terceiros**.
+
+Herda os pisos 22–29 da `schematize-engineering` (git como trava de conclusão, deploy só do git, ops é o gate da IA, sem agents inúteis, relatório 30 min/handoff 6 h, CI remoto só antes do hml, microserviço autônomo, build em dev/hml + higiene).

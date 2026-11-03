@@ -38,6 +38,7 @@ dá ao Claude algo verificável.
   = exit 4), de propósito: o piso não depende de disciplina.
 - `workspace-write` exige: working tree **limpa ou em branch/worktree dedicado** (para o diff ser
   atribuível ao externo e descartável), pedido explícito do usuário e revisão do diff pelo Claude.
+- **O externo nunca toca servidor (pisos 22/24):** o `delegar.sh` injeta um preâmbulo em todo brief (proibido `ssh`/`scp`/`rsync`/`kubectl`/deploy/commit/push; a entrega é diff/texto) e **recusa** (exit 3) brief em `workspace-write` que mande usar `ssh`/`scp`/`rsync`/`kubectl`. O resultado só vale depois de o **orquestrador** revisar e commitar (piso 22); mudança em servidor é operação nomeada do ops.
 - Efeito externo (rede, deploy, e-mail, pagamento) **nunca** sai do externo: vale
   `schematize-engineering` -> `references/efeitos-externos.md` (efeito externo nunca sai de não-prd).
 

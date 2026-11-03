@@ -3,6 +3,12 @@
 Todas as mudanças relevantes deste pacote, no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 com versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
+## [Não lançado]
+### Corrigido
+- `delegar.sh`: injeta preâmbulo obrigatório em todo brief (externo nunca toca servidor; entrega é diff/texto; só o orquestrador comita) e recusa (exit 3) brief em `workspace-write` que mande `ssh`/`scp`/`rsync`/`kubectl` (pisos 22/23/24). 4 testes novos (vermelho antes).
+### Adicionado
+- Bloco "Herda os pisos 22–29".
+
 ## [0.3.0] — 2026-10-15
 Economia por assinatura e placar de ferramentas. A tese: quem já paga Codex, Cursor e/ou Gemini tem cota que se perde se não for usada; despachar unidades a elas poupa tokens do Claude e ganha paralelismo, sem tirar do Claude o papel de orquestrador e revisor. E sem registro do que cada ferramenta entrega, a escolha vira opinião: nasce o placar.
 

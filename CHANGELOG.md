@@ -6,6 +6,7 @@ com versionamento [SemVer](https://semver.org/lang/pt-BR/).
 ## [0.4.0] — 2026-11-03
 ### Corrigido
 - `delegar.sh`: injeta preâmbulo obrigatório em todo brief (externo nunca toca servidor; entrega é diff/texto; só o orquestrador comita) e recusa (exit 3) brief em `workspace-write` que mande `ssh`/`scp`/`rsync`/`kubectl` (pisos 22/23/24). 4 testes novos (vermelho antes).
+- `delegar.sh`: `trap` INT/TERM apaga o diretório que o próprio script criou (a saída normal segue preservada); `detectar.sh`: `curl | bash` é só texto de orientação, com `# shell-ok`.
 ### Adicionado
 - Bloco "Herda os pisos 22–29".
 

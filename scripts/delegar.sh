@@ -91,7 +91,10 @@ esac
 command -v timeout >/dev/null 2>&1 || { echo "delegar.sh: 'timeout' (coreutils) ausente" >&2; exit 2; }
 
 # shell-ok: a saída precisa SOBREVIVER ao script (o Claude lê resposta.txt depois e descarta); trap apagaria o resultado
-out="${MODELS_OUT_DIR:-$(mktemp -d "${TMPDIR:-/tmp}/models-XXXXXX")}"
+criado=""; [ -n "${MODELS_OUT_DIR:-}" ] || criado="$(mktemp -d "${TMPDIR:-/tmp}/models-XXXXXX")"
+out="${MODELS_OUT_DIR:-$criado}"
+# Ctrl-C/TERM apaga o diretório que ESTE script criou; na saída normal ele fica (o chamador lê e descarta)
+trap '[ -z "$criado" ] || rm -rf "${criado:?}"; exit 130' INT TERM
 mkdir -p "$out"
 resp="$out/resposta.txt"; err="$out/stderr.txt"
 : > "$resp"; : > "$err"

@@ -77,7 +77,7 @@ if [ -n "$bin" ]; then
   fi
   registra "$(emite cursor "$bin" "$p" "$v" "$a" "$b" "sem geração de imagem documentada")" cursor
 else
-  registra "$(emite cursor cursor-agent "" "" nao "binário ausente (o 'cursor' do sistema é o editor, não o agent CLI)" "instalar: curl https://cursor.com/install -fsS | bash (ver references/stack-versoes.md)")" cursor
+  registra "$(emite cursor cursor-agent "" "" nao "binário ausente (o 'cursor' do sistema é o editor, não o agent CLI)" "instalar: curl https://cursor.com/install -fsS | bash (ver references/stack-versoes.md)")" cursor   # shell-ok: o `curl | bash` é TEXTO de orientação ao usuário dentro de string (campo "como"), nunca executado pelo script
 fi
 
 sep=""; out='{"provedores":['
